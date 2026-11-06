@@ -65,6 +65,11 @@ Tugas2_Inherit-polymorph-Npmawalakhir/
 │       ├── Keranjang.java
 │       └── TesSoal4.java
 ├── .gitignore
+├── ss/
+│   ├── soal1.png
+│   ├── soal2.png
+│   ├── soal3.png
+│   ├── soal4.png
 └── README.md
 ```
 
