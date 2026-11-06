@@ -64,3 +64,21 @@ Saat new B() dipanggil, constructor superclass (A) dieksekusi lebih dulu. Constr
 **6. Analisis Relasi is-a Titik dan Lingkaran**
 Pemanggilan l3.luas() menghasilkan 0.0 karena tipe dinamis l3 adalah Titik, sehingga method luas() yang dijalankan adalah hasil override milik Titik.
 Meskipun secara geometri "Titik adalah sebuah Lingkaran dengan jari-jari 0", dalam Pemrograman Berorientasi Objek (OOP) relasi is-a ini melanggar Liskov Substitution Principle (LSP). Konsekuensinya, jika sebuah sistem mengharapkan objek Lingkaran yang selalu memiliki luas lebih dari nol (misalnya sebagai pembagi dalam perhitungan kepadatan), memasukkan objek Titik akan merusak logika program dan memicu error seperti pembagian dengan nol (DivisionByZero). Subclass tidak boleh mengubah ekspektasi dasar dari superclass-nya.
+
+## Soal 3: Titik dan Garis
+
+**1. Prediksi Output Baris Kedua (Sebelum Perbaikan / Konsep Aliasing)**
+Jika *defensive copy* belum diterapkan pada constructor `Garis`, pengubahan nilai `t.setX(100)` akan memicu efek *aliasing*. Karena `Garis g2` dan variabel `t` merujuk pada alamat memori objek yang sama, perubahan pada `t` akan "bocor" ke dalam `g2`. 
+Output yang diprediksi dan tercetak pada baris kedua adalah: `(100.0, 1.0) - (5.0, 5.0)`.
+
+**2. Output Setelah Perbaikan (Penerapan Defensive Copy)**
+Setelah constructor `Garis` diubah menggunakan *defensive copy* (menginstansiasi objek `Titik` baru dengan nilai yang disalin, bukan sekadar menyalin referensi memori), perubahan pada objek `t` di luar kelas tidak lagi memengaruhi status internal `Garis g2`. 
+Output yang tercetak menjadi: `(1.0, 1.0) - (5.0, 5.0)`.
+
+**3. Kapan masing-masing perilaku lebih tepat?**
+*   **Sebelum Perbaikan (Aliasing / Shallow Copy):** Lebih tepat digunakan jika sistem membutuhkan sinkronisasi data *real-time* atau *shared state*. Contohnya, pada sistem visualisasi *live tracking* rute taksi online; jika posisi mobil (Titik) bergerak, rute (Garis) di layar harus otomatis ikut bergeser mengikuti titik tersebut tanpa perlu pembaruan manual.
+*   **Sesudah Perbaikan (Defensive Copy / Deep Copy):** Lebih tepat digunakan jika integritas dan keamanan data menjadi prioritas (objek bersifat *immutable*). Contohnya, sistem pemetaan batas sertifikat tanah; koordinat batas (Titik) tidak boleh berubah secara tak sengaja hanya karena objek di luar sistem memodifikasi nilainya.
+
+**4. Masalah Desain jika Garis extends Titik (Relasi is-a vs has-a)**
+Jika `Garis` dibuat dengan melakukan `extends Titik`, kita memaksakan relasi *is-a* ("Garis adalah sebuah Titik"). Secara logika geometri umum dan desain berorientasi objek (OOP), hal ini salah arah dan melanggar aturan dasar. Garis tidak berwujud sebagai satu titik tunggal, melainkan **dibentuk oleh** dua titik, yang mana ini adalah ranah relasi *has-a* (Komposisi). 
+Secara teknis, jika di-*extends*, `Garis` akan mewarisi atribut tunggal `x` dan `y` milik `Titik`, padahal sebuah garis mutlak membutuhkan dua set koordinat (titik awal dan titik akhir) untuk dapat eksis dan dihitung panjangnya.
